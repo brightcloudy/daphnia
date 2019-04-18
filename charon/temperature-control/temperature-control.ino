@@ -48,7 +48,7 @@ const float TEMP_HYSTERESIS = 0.5; // °C
 static FILE uart = {0};
 
 // Set aside some memory for averaging samples
-int sum;
+float sum;
 float temperature;
 
 // variable to track duration of peltier on and off-time
@@ -63,8 +63,8 @@ DeviceAddress mainTemp;
 
 static int uart_putchar (char c, FILE *stream)
 {
-    Serial.write(c) ;
-    return 0 ;
+    Serial.write(c);
+    return 0;
 }
 
 void setup() {
@@ -102,29 +102,28 @@ void loop() {
   // Average many samples
   sum = 0;
   for (int n = 0; n < N_SAMPLES; n++) {
-    sum += analogRead(sensorPin);
-    delay(SAMPLE_FREQUENCY);
-    peltier_duration += SAMPLE_FREQUENCY;
+    sum += sensors.getTempC(mainTemp);
+    peltier_duration += (uint16_t) (TCONV+0.5); // round non-integer conversion times
   }
   
-  temperature = readingToCelsius((sum / N_SAMPLES));
+  temperature = sum / N_SAMPLES;
 
   char temp_string[6];
   dtostrf(temperature, TEMP_FORMAT_WIDTH, TEMP_FORMAT_PREC, temp_string); // alternative function to properly format temperature strings
 
   printf("%s\n", temp_string);
 
-  if (temperature > (setpoint + setpoint_hysteresis)) {
+  if (temperature > (TEMP_SETPOINT + TEMP_HYSTERESIS)) {
     if (digitalRead(PELTIER_OUT) == HIGH) {
       digitalWrite(PELTIER_OUT, LOW);
-      printf("-DEBUG- Peltiers ON: off for %d milliseconds\n", peltier_duration);
+      printf("-DEBUG- Peltiers ON: off for %lu milliseconds\n", peltier_duration);
       peltier_duration = 0;
     }
   }
-  else if (temperature < (setpoint - setpoint_hysteresis)) {
+  else if (temperature < (TEMP_SETPOINT - TEMP_HYSTERESIS)) {
     if (digitalRead(PELTIER_OUT) == LOW) {
       digitalWrite(PELTIER_OUT, HIGH);
-      printf("-DEBUG- Peltiers OFF: on for %d milliseconds\n", peltier_duration);
+      printf("-DEBUG- Peltiers OFF: on for %lu milliseconds\n", peltier_duration);
       peltier_duration = 0;
     }
   }
