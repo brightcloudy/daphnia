@@ -36,7 +36,7 @@ while ser.is_open:
         timeval = time.time()
         timestamp = time.strftime("[%Y-%m-%dT%H:%M:%SZ]", time.gmtime(timeval))
         # echo lines coming from the Arduino about Peltier switching, but don't log them (yet)
-        if line.startswith("Peltier"):
+        if line.startswith("-DEBUG-"):
             # TODO: separate logging for switching of Peltier elements in database
             print("%s %s" % (timestamp, line[:-1]))
         else:
