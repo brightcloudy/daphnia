@@ -102,6 +102,7 @@ void loop() {
   // Average many samples
   sum = 0;
   for (int n = 0; n < N_SAMPLES; n++) {
+    sensors.requestTemperaturesByAddress(mainTemp);
     sum += sensors.getTempC(mainTemp);
     peltier_duration += (uint16_t) (TCONV+0.5); // round non-integer conversion times
   }
