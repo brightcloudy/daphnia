@@ -2,3 +2,4 @@ charon/*.db
 charon/*.txt
 charon/temperature-control/build-uno/
 .*.swp
+*.pyc

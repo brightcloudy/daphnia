@@ -1,0 +1,3 @@
+[submodule "charon/nucleo-temperature"]
+	path = charon/nucleo-temperature
+	url = https://github.com/brightcloudy/nucleo-temperature
